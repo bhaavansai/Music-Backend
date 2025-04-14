@@ -2,7 +2,7 @@ const asyncHandler = require('express-async-handler');
 const Admin = require('../models/adminModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+const Student = require("../models/schema/studentSchema")
 //@desc Login the admin
 //@route POST /admin/login
 //@access Public
@@ -46,4 +46,39 @@ const loginAdmin = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { loginAdmin };
+//########################################################33
+ //to search the free trial clienrts 
+ const searchInNewStudentsAPI = asyncHandler(async (req, res) => {
+  try {
+    const query = req.query.q?.trim() || '';
+    const status = req.query.status?.trim(); // Optional status filter
+
+    if (typeof query !== 'string') {
+      return res.status(400).json({ message: 'Invalid query parameter' });
+    }
+
+    const searchRegex = new RegExp(query, 'i');
+
+    const searchConditions = {
+      $or: [
+        { studentID: searchRegex },
+        { name: searchRegex },
+        { phone: searchRegex },
+        { category: searchRegex }
+      ]
+    };
+
+    // Add status filter only if it's provided
+    if (status) {
+      searchConditions.status = status;
+    }
+
+    const students = await Student.find(searchConditions).sort({ registeredAt: -1 });
+
+    res.status(200).json(students);
+  } catch (error) {
+    console.error('Search error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+module.exports = { loginAdmin, searchInNewStudentsAPI };

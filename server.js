@@ -3,7 +3,7 @@ const errorHandler = require("./middleware/errorHandler");
 const connectDb = require("./config/dbConnection");
 const dotenv=require("dotenv").config();
 const cors = require('cors');
-
+ 
 connectDb();
 const app=express();
 const port=process.env.PORT || 5000;
@@ -15,7 +15,9 @@ app.use("",require("./routes/userRoutes"));
 app.use("",require("./routes/tutorRoutes"));
 app.use("",require("./routes/adminRoutes"));
 app.use("",require("./routes/sessionRoutes"));
-app.use(errorHandler);
+app.use(errorHandler); 
+
+
 
 app.listen(port,()=>{
    console.log(`server running on port ${port}`);
