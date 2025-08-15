@@ -1,6 +1,5 @@
 require("dotenv").config();
 const { google } = require('googleapis');
-const nodemailer = require("nodemailer");
 const Tutor = require('../models/tutorModel');
 const axios = require("axios");
 
@@ -135,7 +134,7 @@ async function tutorSearch(category, utcDateTime) {
     // Convert utcDateTime to a "HH:mm:ss" string in UTC.
     const providedTimeString = new Date(utcDateTime).toISOString().slice(11, 19);
 
-    const tutor = await Tutor.findOneAndUpdate(
+    let tutor = await Tutor.findOneAndUpdate(
         {
         status: "approved",
         freeTrial: "eligible",
@@ -162,13 +161,13 @@ async function tutorSearch(category, utcDateTime) {
         { $inc: { freeTrialCount: 1 } },
         {
         sort: { freeTrialCount: 1 },
-        projection: { name: 1, phone: 1, timezone: 1 },
+        projection: { username: 1, mobilenumber: 1, timezone: 1 },
         new: true // returns the updated document
         }
     );
 
     if (!tutor) {
-        tutor = { name: "system", phone: "+919999999999", timezone: "Asia/Kolkata" };
+        tutor = { username: "system", mobilenumber: "+919999999999", timezone: "Asia/Kolkata" };
     }
     return tutor;
 }    

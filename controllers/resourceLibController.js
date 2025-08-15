@@ -3,7 +3,7 @@ const musicSheet = require("../models/musicSheetsModel");
 
 // @desc Get all music sheets
 //@route GET /music-sheets
-//@access public
+//@access private
 const getMusicSheets = asyncHandler(async (req,res) =>{
     const sheets = await musicSheet.find();
     res.status(200).json(sheets);

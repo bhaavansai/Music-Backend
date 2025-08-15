@@ -16,7 +16,7 @@ const bookFreeTrial = asyncHandler(async (req, res) => {
     if (!mobilenumber || !username || !gender || !agegroup || !category || !emailID || !password || !timezone || !utcDateTime) {
       return res.status(400).json({ message: "All fields are required" });
     }
-  
+   
     const tutor = await tutorSearch(category, utcDateTime);
     const meetDetails = await createGoogleMeetAndSendEmail(emailID,utcDateTime);
     // console.log(tutor);
@@ -41,15 +41,11 @@ const bookFreeTrial = asyncHandler(async (req, res) => {
       password: hashedPassword, // Store hashed password
       timezone,
     });
-
-    // const dateObj = new Date(utcDateTime); // Convert to Date if not already
-    // console.log(dateObj);
-    // const isoString = dateObj.toISOString();
-    // console.log(isoString);
+    //console.log(newUser);  
     // 5️⃣ Create a future session for the user
     const newSession = await FutureSession.create({
-      tutorName: tutor.name,
-      tutorMobileNo: tutor.phone,
+      tutorName: tutor.username,
+      tutorMobileNo: tutor.mobilenumber,
       tutorTimeZone: tutor.timezone,
       userName: username,
       userMobileNo: mobilenumber,
@@ -59,9 +55,10 @@ const bookFreeTrial = asyncHandler(async (req, res) => {
       sessionType: "free-trial",
       sessionDateTime: utcDateTime,
     });
+    //console.log(newSession);
 
-  
-    if (newUser && newSession) {
+  //&& newSession
+    if (newUser && newSession ) {
       res.status(201).json({
         message: "User registered and session created successfully",
         user: {
