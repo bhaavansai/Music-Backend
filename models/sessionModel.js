@@ -10,7 +10,8 @@ const futureSessionSchema = new mongoose.Schema({
   meetLink: { type: String, required: true },
   category: { type: String, required: true },
   sessionType: { type: String, required: true },
-  sessionDateTime: { 
+  sessionDateTime: {
+     
     type: String, 
     required: true // This stores both date and time in UTC (ISO 8601 format)
   }

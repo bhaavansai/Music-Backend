@@ -4,6 +4,10 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const FutureSession = require("../models/sessionModel");
 const { createGoogleMeetLink, tutorSearch, createGoogleMeetAndSendEmail } = require('../middleware/helperFunctions');
+const Session = require('../models/schema/sessionSchema')
+const Payment = require("../models/schema/paymentSchema")
+
+const Student = require("../models/schema/studentSchema")
 // const { meet } = require("googleapis/build/src/apis/meet");
 
 // @desc Book a free trial for the user
@@ -130,4 +134,91 @@ const currentUser = asyncHandler(async (req,res)=>{
     res.json(req.user);
 });
 
-module.exports = {bookFreeTrial, loginStudent, currentUser}
+//#############################################################################################333333
+//to set the events in calender 
+const getStudentCalendarEvents = async (req, res) => {
+  const { studentId } = req.params;
+
+  try {
+    const sessions = await Session.find({
+      students: studentId,
+      date: { $gte: new Date() },
+    }).populate('course tutor');
+
+    const payments = await Payment.find({
+      student: studentId,
+      'installments.invoiceDate': { $gte: new Date() }
+    });
+
+    const events = [];
+
+    // Sessions
+    sessions.forEach(session => {
+      events.push({
+        title: `${session.course?.name || 'Session'} with ${session.tutor?.name || ''}`,
+        type: 'session',
+        date: session.date,
+        sessionId: session._id,
+      });
+    });
+
+    // Installment Invoices
+    payments.forEach(payment => {
+      payment.installments.forEach(installment => {
+        if (installment.invoiceDate >= new Date()) {
+          events.push({
+            title: `Payment Due - ₹${installment.invoiceAmount}`,
+            type: 'payment',
+            date: installment.invoiceDate,
+            paymentId: payment._id,
+          });
+        }
+      });
+    });
+
+    res.status(200).json(events);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching student calendar events' });
+  }
+};
+
+
+
+
+
+// const registerDummyStudent = async () => {
+//   try {
+   
+//     const student = new Student({
+//       name: 'testing2',
+//       email: 'lalankr302@gmail.com',
+//       password: "123456",
+//       phone: '+918521754454',
+//       category: ['Flute', 'Piyano'],
+//       timeZone: 'America/New_York',
+//       clientDetails: {
+//         country: 'america',
+//         city: 'new york',
+//         parentName: 'Manoj saw',
+//         gender: 'Male',
+//         ageGroup: '1-6',
+//       },
+//       enrolledCourses: [],  // You can add course ObjectIds here
+//       sessions: [],         // You can add session ObjectIds here
+//       paymentHistory: [],   // Add payment ObjectIds if needed
+//     });
+
+//     await student.save();
+//     console.log('🎉 Dummy student registered successfully:', student);
+//   } catch (err) {
+//     console.error('❌ Error registering dummy student:', err.message);
+//   }
+// }; 
+module.exports = {
+  bookFreeTrial,
+   loginStudent,
+    currentUser,
+     getStudentCalendarEvents
+    }

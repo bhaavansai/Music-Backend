@@ -2,10 +2,34 @@ const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Tutor = require("../models/tutorModel");
-
+// const tutor = require("../models/schema/tutorSchema")
 // @desc register a tutor
 //@route POST /teach
+
 //@access public
+
+// const Tutor = require("./models/schema/tutorSchema"); // Update the path as needed
+
+// const registerDummyTutor = async () => {
+//   try {
+//     const newTutor = new tutor({
+//       name: "dishank pr",
+//       email: "dashboardforassignment@gmail.com",
+//       phone: "+918697757299",
+//       skills: ["Piano", "Guitar"],
+//       rating: 3.5
+//       // No tutorID provided — will be auto-generated
+//     });
+
+//     const savedTutor = await newTutor.save();
+//     console.log("Dummy tutor registered successfully:", savedTutor);
+//   } catch (error) {
+//     console.error("Error registering dummy tutor:", error);
+//   }
+// }; 
+
+
+// registerDummyTutor()
 const registerTutor = asyncHandler(async (req, res) => {
     try {
       const {
