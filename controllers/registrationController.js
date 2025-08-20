@@ -1,4 +1,5 @@
 const Registration = require("../models/registrationModel");
+const asyncHandler = require("express-async-handler");
 
 exports.createRegistration = async (req, res) => {
   try {
@@ -74,3 +75,8 @@ exports.createRegistration = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
+exports.getRegistrations = asyncHandler(async (req, res) => {
+  const registrations = await Registration.find();
+  res.status(200).json(registrations);
+});
